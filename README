@@ -1,0 +1,15 @@
+This is a tool to create immersive magic foliage for a GURPS type roleplaying system.
+partial credit goes to my good friend Dan Herron for the GURPS knowledge and prototyping and all the python implementation was done by me.
+
+...it is far from complete, at the time of creation it will have the ability to load a series of datasheets with plant biases and a series of methods for mainting successful functioning and also loading "plant data" from the given datasheets or a random one.
+
+(still being developed)
+- a function to compute rarity that is also implemented in get_random_plant that allows random plants to be selected from a set of occurrence values or from a truly random set.
+
+- a function for generating unique names for plants based on computed properties
+- a function for generating "quality modifiers" for the plant name.
+- a function for generating a "description" field for plant instances based on properties
+
+
+Author: Zoctavous
+email: jgjedi@gmail.com
