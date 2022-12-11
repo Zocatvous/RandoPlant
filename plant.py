@@ -13,6 +13,8 @@ pd.set_option('display.max_rows', None)
 '''
 underscored properties and attributes are "meta" sort of things that help drive the object functionally
 non-underscored methods and attributes are for setting the plant
+eventually there will be differentiation between GET and SET functions that will either set attributes or retrieve values as an output
+but we are doing both at once for the time being
 '''
 repeat=0
 class Plant:
@@ -44,7 +46,7 @@ class Plant:
 			i=0
 			for file in os.listdir(bias_dir):
 				filepath = os.path.join(bias_dir,file)
-				obj[self._sanitize_bias_keystring(filepath)] = {'_name':self._sanitize_bias_keystring(filepath),'id':i,f'_filestring':filepath,'_dataframe':pd.read_csv(filepath, encoding='utf-8',delimiter='|')}
+				obj[self._sanitize_bias_keystring(filepath)] = {'_name':self._sanitize_bias_keystring(filepath),'id':i,f'_filestring':filepath,'_dataframe':pd.read_csv(filepath, encoding='utf-8',delimiter='|'),'base':}
 				i+=1
 		except Exception as e:
 			raise ValueError(f'Could not load the biases files - Error:{e}')
@@ -75,7 +77,11 @@ class Plant:
 		self.plant_name=plant[1]
 		self.plant=plant
 		return plant
-	def get_random_plant(self,rgn):
+	def get_random_plant(self,rgn=None):
+		if rgn==None:
+			rgn=self.regional_bias[1]
+		else:
+			raise NameError('Need to specify a Region in the class declaration')
 		col=random.randint(0,self._plant_bias_obj[self.regions[rgn]]['_dataframe'].shape[1]-1)
 		plant=self.get_plant(rgn,col)
 		self.plant=plant
@@ -106,6 +112,19 @@ class Plant:
 		return plant
 		if (rgn not in self.regions.keys()):
 			raise NameError(f'Please enter a valid region: {self.regions}')
+	def get_plant_potence(self):
+		if self.plant is not None:
+			df=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe']			
+			weights=np.array([i for i in df.iloc[0,:]][1:]).astype(float)
+			sum_wgt=np.sum(weights)
+			#this needs to be set by the region or something...maybe this is manipulated by a character level
+			base=10
+			extremity=1
+			limit=sum_wgt
+			potency=random.randint(2+base**(extremity-1),2+base**extremity)*sum_wgt
+			self.potency=potency
+
+
 	def compute_properties(self):
 		pass
 	def compute_rarity(self):
@@ -117,32 +136,18 @@ class Plant:
 			occur_range=df.iloc[0][1:].astype(int).sum()
 			occur_val=self.plant['values'][0]
 			return float(occur_val)/occur_range
-			# occurence_prob=self.plant.loc['labels'self.plant_name=]
-
-
-
+			# occurence_prob=self.plant.loc['labels'self.plant_name=
 
 			#here is a row that can be rowsummed to get the occurrence range for the region
 			# occur_span=df.iloc[0,:].sum(axis=1)
 			# print(occur_span)
-
-	
-
-# def count_elements(seq) -> dict:
-# """Tally elements from `seq`."""
-# ...     hist = {}
-# ...     for i in seq:
-# ...         hist[i] = hist.get(i, 0) + 1
-# ...     return hist
-
 def count_elements(seq):
 	hist={}
 	for i in seq:
 		hist[i] = hist.get(i,0)+1
 	return hist
-
-def checkit():
-	x = Plant('Centriss')
+def histogram_making():
+	
 	#test plant maker
 	# for i in range(10):
 	# 	x.get_plant_col(rgn=1,randomize=True)
@@ -160,6 +165,11 @@ def checkit():
 	_dic=((value,key) for (key,value) in result_dic.items())
 	s=sorted(_dic,reverse=True)
 	pprint.pprint(s)
+
+def checkit():
+	x = Plant('Centriss')
+	x.get_random_plant()
+	x.get_plant_potence()
 	# test the function sometime and make sure its a histogram
 
 
