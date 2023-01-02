@@ -48,6 +48,7 @@ class Plant:
 		return [i for i in self.regions if self.regions[i]==r][0]
 	def _sanitize_bias_keystring(self,filepath):
 		return re.search(r'.*\_',filepath).group(0)[7:-1].capitalize()
+		#this should be a @property
 	def _generate_bias_obj(self):
 		obj = {}
 		bias_dir = r'./bias/'
@@ -72,7 +73,8 @@ class Plant:
 		#set plant name attr
 		#set plant attr
 		#set plant columns while on the attr
-
+		
+	#property
 	def get_plant_power_profile(self):
 		pass
 	def get_plant_price(self):
