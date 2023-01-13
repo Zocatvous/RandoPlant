@@ -88,8 +88,7 @@ class Plant:
 		options=df.iloc[1].tolist()[1:] #MIGHT NEED TO TAKE THIS OUT
 		weights=np.array([i for i in df.iloc[0,:]][1:]).astype(float)
 		cdf=np.cumsum(weights/np.sum(weights))
-		roll=np.random.random()
-		idx=bisect_left(cdf, roll)
+		idx=bisect_left(cdf, np.random.random())
 		plant=df.iloc[:,idx]
 		self.plant_name=plant[1]
 		self.plant=plant
