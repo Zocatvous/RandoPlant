@@ -7,12 +7,12 @@ from django.db import models
 # 	object_type=OneToManyField(Plant)
 
 class Plant(models.Model):
-	#game_object_id=models.ForiegnKey(GameObject, related_name="plant", on_delete=models.CASCADE)
+	#game_object_id=models.ForeignKey(GameObject, related_name="plant", on_delete=models.CASCADE)
 	name=models.TextField(max_length=50, blank=True)
 	occurence_value=models.IntegerField(null=True, default=0)
 	common_value=models.IntegerField(null=True, default=0)
 	#continent=models.ForiegnKey(Continent, related_name="plant",max_length=30)
-	metalmodels.FloatField(default=0.0,null=False,blank=False)
+	metal=models.FloatField(default=0.0,null=False,blank=False)
 	animal=models.FloatField(default=0.0,null=False,blank=False)
 	body_control=models.FloatField(default=0.0,null=False,blank=False)
 	comm_and_emp=models.FloatField(default=0.0,null=False,blank=False)
