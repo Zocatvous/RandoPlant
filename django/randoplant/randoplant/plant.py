@@ -25,7 +25,7 @@ Class kwargs are
 
 '''
 repeat=0
-class Plant:
+class PlantUtilities:
 	def __init__(self,regional_bias,random=False,weighted=False):
 		#data is probably going to be assigned by inheritance from a game object
 		self._data = {"id":"UUID",
@@ -41,7 +41,7 @@ class Plant:
 		self.regions = {1:'Centriss',2:'Tentacular',3:'Mormiria',4:'Tirelessnight',5:'Reyawinn',0:'Xilewood'}
 		self.locaitons=None
 		self.regional_bias = (regional_bias,self.get_regional_bias_int(regional_bias))
-		self.all_plantnames_in_region=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe'].iloc[1,:][1:].tolist()
+		#self.all_plantnames_in_region=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe'].iloc[1,:][1:].tolist()
 		self._plant_id = "create a unique ID based upon a generated NAME for the plant so I can identify when stuff gets made"
 		self.potence = -1
 	def get_regional_bias_int(self,r):
@@ -51,7 +51,8 @@ class Plant:
 		#this should be a @property
 	def _generate_bias_obj(self):
 		obj = {}
-		bias_dir = r'./bias/'
+		#this line is badass because it will always find the file! remember this shit!
+		bias_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bias')
 		try:
 			i = 0
 			for file in os.listdir(bias_dir):
@@ -182,7 +183,7 @@ def histogram_making():
 	pprint.pprint(s)
 
 def checkit():
-	x = Plant('Centriss')
+	x = PlantUtilities('Centriss')
 	x.get_random_plant()
 	x.get_plant_potence()
 	# test the function sometime and make sure its a histogram

@@ -55,4 +55,3 @@ class Plant(models.Model):
 # class Item(models.GameObject):
 # 	game_object_id=models.IntegerField()
 # 	name=models.CharField(max_length=50)
-

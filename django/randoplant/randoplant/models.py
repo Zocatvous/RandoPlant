@@ -45,8 +45,9 @@ class Plant(models.Model):
 
 	def __str__(self):
 		return f"{self.name} - {self.common_value} - Some other things"
+
+	# def clean(self):
 		
-	def clean(self):
 
 
 # class Continent(models.GameObject):
