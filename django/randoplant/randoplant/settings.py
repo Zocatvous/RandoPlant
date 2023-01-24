@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'randoplant',
-    'randoplant_game'
+    'randoplant_game',
 ]
 
 MIDDLEWARE = [
