@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'randoplant',
-    'randoplant_game',
+    'randoplant_game'
 ]
 
 MIDDLEWARE = [
@@ -71,7 +71,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'randoplant.wsgi.application'
-
+SHELL_PLUS_PRE_IMPORTS = [('randoplant.plant','PlantUtilities')]
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

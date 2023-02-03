@@ -58,12 +58,9 @@ class PlantUtilities:
 			for file in os.listdir(bias_dir):
 				filepath = os.path.join(bias_dir, file)
 				sanitized_filepath = self._sanitize_bias_keystring(filepath)
-				obj[sanitized_filepath] = {
-					'_name': sanitized_filepath,
-					'id': i,
-					'_filestring': filepath,
-					'_dataframe': pd.read_csv(filepath, encoding='utf-8', delimiter='|'),
-					'base':None}
+				#THIS NEEDS TO BE CHANGED!
+				obj[re.match(r'^.*?(?=_)', file).group(0)] = {
+					'_dataframe': pd.read_csv(filepath, encoding='utf-8', delimiter='|')}
 				i += 1
 		except Exception as e:
 			raise ValueError(f'Could not load the biases files - Error:{e}')

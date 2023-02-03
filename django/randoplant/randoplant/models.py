@@ -37,7 +37,7 @@ class Plant(models.Model):
 	price=models.FloatField(default=0.0,null=True,blank=True)
 	culinary=models.CharField(max_length=50, default=None,null=True,blank=True)
 	poison=models.CharField(max_length=50, default=None,null=True,blank=True)
-	defense=models.FloatField(default=0.0,null=True,blank=True)
+	defense=models.TextField(default=None,null=True,blank=True)
 	chemical=models.CharField(default=0.0,null=True,blank=True,max_length=200)
 	symbolic=models.TextField(default=0.0,null=True,blank=True,max_length=200)
 	antidote=models.CharField(default=0.0,null=True,blank=True,max_length=200)
