@@ -1,0 +1,131 @@
+Create a new model that can accept generated "instances" of different Plants - 
+
+
+Plants can have 
+ A Potence
+ any N generated affinities
+ a generated price .. which I probably need to just simplify to just being "DINARS" in order to simplify it
+ a flavor profile... 
+
+ (I really need to find a way to mechanize flavor well - which probably means that it needs to be a way to like.. quantify the flavors or assign mechanical benefits to different flavor profiles - maybe It gives more "productivity" in the traditional Artisan sense - maybe start introducing the cardinalities concept early... Maybe it has some sort of "extra" stic- and generally qualitative effect on "proficiency score" - "generated effects" - "a momentary bump in Eccentricity" - "a simple change to a whole batch of statics") - I prob need to migrate the Plant database and have "flavor" be an object or something - Here it is (add to discord) - Food with crazy flavor profiles are really awesome when you increment some sort of "experienced flavor score" that sort of passively increase almost every statistic in the game by a "TINY TINY" amount - I hope this feels the way I want it to... I feel like this is close - I almost feel like flavorful things are NOT worth wasting on other stuff...
+
+ BAD food DOES have a bad effect and probably prevents you from getting the full benefit of all the stuff in the Plant! Flavor needs to be a barrier to things that enhance your ability to be "better" at some sort of intellectual or skill based task - But maybe at some level you become "DEPENDANT" on flavorful food (no this is annoying)
+
+ - especially things that enhance your character - so theres probably some mechanism of delivering flavortext to the player - so im like -kindof - making a text based adventure thing... but It probably always needed that a little bit - 
+
+
+Damage can be done to you while you are crafting due to heat generation and can be mitigated by adding something Frozen or Temperature cooling or something to your mixture - you also dont know something is going to blow up unless you use it. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(Extrinsic Crafting) - Lightbourne(pulp,imulsion,puree - need cooking words...) Alchemy
+- CRAFTING Trees for different elements based purely upon generated magical statistics
+
+
+Metal Ingot - two metal potenced Flowers can create an Ingot if melted down with a fire aspected flower
+Thats (2 metal/2 Fire)
+
+Standing flame - a really hot bunch of stuff - we need to have ANY fire aspected thing.
+
+Duplication Potion - Lightbourne Alchemy (ASK DAN ABOUT WHAT COLLEGE THIS IS)
+Basically creates double the amount of a potion when you create it - this should be a difficult criteria to get but should allow you to just double the output of anything its consumed in... 
+
+
+(ASK DAN about when/what combination of )
+Dragon's Bones (Goldenization) Potion - Renders the output of any alchemy combination as all being Solid GOLD - Midas Touch basically
+Makes every output of a combination into a Golden ingot! (Any use of Fire that has over 100 Potence should explode and do some set amount of damage that should scale with Potence of the thing and )
+
+Magic Double Hand Oil - Makes a potion that doubles the "grabby-ness" of your Pick action for some amount of time. You grab double of everything you pick for the next N minutes.
+
+Time Dialation Potion - Sufficiently powerful GURPS college school that allows time travel - which means that you bascally just pick as many times as you could and let the potion just autograb?
+
+Time Stopping Potion - Sufficiently powerful GURPS college school that stops time and basically cancels all consumption of everything while its effects are active. any damage accumulated will be resolved when the Timeout potion effect ends.
+This needs to be maybe a combination of potencies that need to be satisfied. 
+
+Firehands potion - 
+Maybe allows you to change the phase of whatever you're mixing or allows for you to ignore all costs for heat. should be consumed when used. 
+
+
+Fireball Potion - 
+Sufficiently high potence in the Fire Category.
+some amount of fire damage to yourself 
+
+
+Waterhands potion 
+Ignores requirements for aqueous solutions - with sufficiently high Water scores
+
+
+MagicMaker Potion.
+Basically uses all ingredients in your inventory - (Need to have a box, or the ability to be able to make one) and consumes all of them in whatever way would be optimal while (MAYBE) being but unlocks all of the 
+
+
+
+
+ (Intrinsic Crafting) - Tapestrial Alchemy
+- CRAFTING Trees for different flowers based purely on their names and combinations - (Flavors - Legendary Brews with cool effects based upon stories - sort of the baked in characteristics of the flower)
+
+Ulthrad's Ichor (10xExc Score Potion)
+Any Ulthrad's Bloom mixed with something else that is Elven Related (Elf's Ear for example) Puts a 10 x (Excentricity score and a 10X multiplier to the effective Potency of the thing it is used as an ingredient for (including other Ulthrad's Ichor), Ulthrad's Ichor - is a rare ingredient that adds a multiplier to this stat and STACKS with all other Ulthrad's Ichor that you mix it with according to an exponential equation that I can work out that is roughly based upon the Kaiben Hok ritual from Forcewinds.)
+
+
+Resurrection Potion - Tapestrial Alchemy
+Deathcap + Aisob Leaf
+This combination allows you to ignore the effects of Death. 
+
+FlavorFlave Potion - (something culinary inspired SaltFatAcidHeat)
+Basically adds Potence in Flavor score to whatever you add it to
+This should be some stuff that Balances enough points in each of the flavor profiles 
+
+
+Thinning Decoction - (This should RUIN flavor profiles)
+Pure Diamond Rose (Or anything that has a crystal Property) + SuperNight-shade
+Trims off a single property from the Magical Profile of a plant when you use it on a flower.
+
+
+
+
+(I Dont know what this should do but it should be awesome)
+Inside Out/Inversion Potion - Requires a group of ingredients that are sort of tune to their OPPOSITE of what they nromally are
+Freezing Fireblossom, Airy EarthRoot, 
+
+
+
+
+(I NEED TO HAVE A SPREADSHEET THAT HAS A POTION (OR TWO) FOR EVERY SINGLE COMBINATION OF FLOWER WITH EVERY OTHER TO CREATE COMPETING USES FOR FLOWERS)
+
+
+
+
+
+
+
+
+
+
+
+
+The Tapestrial Qualities should al be just a TEXT that accomopanies every flower. It should have elements that sort of "point" to the sorts of things it can be used with....
+
+Ulthrad's Bloom.
+
+Lore - points to what It can be used for - I need someone who writes well to write flavortext that indicates what they could be combined with to make 
+A small clearly magical flower that emits a small humming noise as it comes closer to other magically potent articles. Said to be used to create a powerful ichor that magnifies the magical content of every substance it comes in contact with. 
+
+Not Tasty.
