@@ -42,6 +42,7 @@ class Plant(models.Model):
 	symbolic=models.TextField(default=0.0,null=True,blank=True,max_length=200)
 	antidote=models.CharField(default=0.0,null=True,blank=True,max_length=200)
 	continent_origin=models.CharField(max_length=30,null=False,blank=True)
+	description=models.TextField(default=None,max_length=300, null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.name} - {self.common_value} - floatsum(func)"

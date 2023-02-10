@@ -1,8 +1,8 @@
 # ignore all __pycache__ files
-*.__pycache__
+*__pycache__*
 
 # probably will need to ignore the database files at some point - not sure how I should position those....
 
 # need to ignore the .env files
 *.env
-*
+*cpython*
