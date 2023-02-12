@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 
 
 # class GameObject(models.Model):
@@ -45,7 +46,34 @@ class Plant(models.Model):
 	description=models.TextField(default=None,max_length=300, null=True, blank=True)
 
 	def __str__(self):
-		return f"{self.name} - {self.common_value} - floatsum(func)"
+		return f"<{self.name} - Commonality:{self.common_value}/{self.total_occurence_for_region(self.continent_origin)}>"
+
+	def get_highest_plant_affinity(self):
+		pass
+
+	@property
+	def region(self):
+		return self.continent_origin
+
+	@property
+	def rarity(self):
+		rarity = ((self.common_value / self.total_occurence_for_region(self.continent_origin)))
+		return round(rarity, 4)
+	
+	def total_occurence_for_region(self, region):
+		plants = Plant.objects.filter(continent_origin=region)
+		total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
+		return total_occurence_value
+
+class Events(models.Model):
+	name=models.TextField(max_length=50,null=False, blank=True)
+	continent_origin=models.CharField(max_length=30,null=False,blank=True)
+	description=models.TextField(default=None,max_length=300, null=True, blank=True)
+	text=models.TextField(default=None,max_length=300, null=True, blank=True)
+
+class Compound(models.Model):
+	name=models.TextField(max_length=50,null=False, blank=True)
+
 
 	# def clean(self):
 		

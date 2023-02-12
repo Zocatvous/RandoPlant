@@ -6,7 +6,13 @@ import uuid
 import random
 import regex as re
 import numpy as np
+import json
 import pandas as pd
+
+#django
+from randoplant.models import Plant
+from django.db.models import Sum
+
 pd.set_option('display.max_rows', None)
 #All we want to do for the moment is make a class that looks up the "string" of the regional bias and loads the biases as a datafram to a dataframe object in an attribute. 
 
@@ -23,8 +29,83 @@ Class kwargs are
 - a wieghted mode for what will be used to generate all flowers according to region
 -
 
+
+Heres a function that needs to generate an integer that fits the specified criteria
+
+=randbetween(2+F59^(E60-1),F59^E60)
+
+
+F59 should be a variable called "base"
+E60 should be a variable called "extremity" calculated like this
+Heres a function that needs to generate an integer that fits the specified criteria
+
+=randbetween(2+F59^(E60-1),F59^E60)
+
+
+F59 should be a variable called "base"
+E60 should be a variable called "extremity" calculated like this
+
+
+
+I need a python function to 
+
+
+I need a python function to 
+
+
 '''
 repeat=0
+class PlantObject(Plant):
+	'''all files for resources should be kept here and follow this convention'''
+	base_dir = os.path.dirname(os.path.abspath(__file__))
+	extremity_file_path = os.path.join(base_dir, "json", "extremity.json")
+	
+	@classmethod
+	def _read_json_file(cls, file_name):
+		with open(file_name, 'r') as f:
+			return json.load(f)
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.extremities_dict = PlantObject._read_json_file(PlantObject.extremity_file_path)
+		self.sizes = []
+		self.potence = None
+		self.extremity = self.get_extremity()
+	
+
+	def get_extremity(self):
+		pass
+
+	@classmethod
+	def select_weighted_plant_by_region(self, region, crazy_value=False):
+		plants = Plant.objects.filter(continent_origin=region)
+		total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
+		cdf = []
+		cumulative_value = 0
+		for plant in plants:
+			cumulative_value += plant.common_value
+			cdf.append((cumulative_value + crazy_value - 0.000001) / total_occurence_value)
+		random_value = random.random() if not crazy_value else random.uniform(0.89, 0.99)
+		for i, value in enumerate(cdf):
+			if random_value <= value:
+				return plants[i]
+		return None
+
+	@classmethod	
+	def _test_profile_weighted_plants_in_region(self,count=100,region='centriss',run_all_regions=False):
+		flower_count = {}
+		for i in range(count):
+			print('picking {} flowers...\r'.format(i),end='\r')
+			flower = self.select_weighted_plant_by_region(region)
+			if flower.name not in flower_count:
+				flower_count[flower.name] = 0
+			flower_count[flower.name] += 1
+		pprint.pprint(flower_count)
+		return flower_count
+
+
+
+
 class PlantUtilities:
 	def __init__(self,regional_bias,random=False,weighted=False):
 		#data is probably going to be assigned by inheritance from a game object

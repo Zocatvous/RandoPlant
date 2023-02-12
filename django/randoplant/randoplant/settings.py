@@ -71,7 +71,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'randoplant.wsgi.application'
-SHELL_PLUS_PRE_IMPORTS = [('randoplant.plant','PlantUtilities')]
+SHELL_PLUS_PRE_IMPORTS = [('randoplant.plant','PlantUtilities'),('randoplant.plant','PlantObject')]
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
