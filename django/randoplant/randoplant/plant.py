@@ -27,13 +27,6 @@ Class kwargs are
 - a currently mandatory regional bias flag
 - a random flag for true random behavior
 - a wieghted mode for what will be used to generate all flowers according to region
--
-
-
-Heres a function that needs to generate an integer that fits the specified criteria
-
-=randbetween(2+F59^(E60-1),F59^E60)
-
 
 F59 should be a variable called "base"
 E60 should be a variable called "extremity" calculated like this
@@ -41,17 +34,8 @@ Heres a function that needs to generate an integer that fits the specified crite
 
 =randbetween(2+F59^(E60-1),F59^E60)
 
-
 F59 should be a variable called "base"
 E60 should be a variable called "extremity" calculated like this
-
-
-
-I need a python function to 
-
-
-I need a python function to 
-
 
 '''
 repeat=0
@@ -67,28 +51,53 @@ class PlantObject(Plant):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.extremities_dict = PlantObject._read_json_file(PlantObject.extremity_file_path)
+		self.extremity_dict = PlantObject._read_json_file(PlantObject.extremity_file_path)
 		self.sizes = []
-		self.potence = None
-		self.extremity = self.get_extremity()
-	
+		self.base = 10
+		self.region = self.get_region()
+		self.potence = self.get_potence()
+		self.extremity = self.get_extremity(region)
 
-	def get_extremity(self):
+	def get_region_extremity(self, region, modify=False):
+		return self.extremity_dict[region]['extremity']
+
+	def get_region_base(self,region,modify=False):
+		return self.extremity_dict[region]['base']
+
+	def get_region_power(self,region, modify=False):
+		return self.extremity_dict[region]['power']
+
+	def get_potence(self, region, modify=False):
+		potence = random.randint(2+)
+
+	def get_price(self):
 		pass
 
+#this is the master setter for all plant instance attributes - this will likely need a TON of 
+	def set_plant_object_instance(self, region):
+		r = random.random()		
+		plant = self.select_plant_by_region(region)
+		extremity = self.get_region_extremity(region)
+		potence = self.get_potence()
+		ex_val =  next((i for i in range(1, 14) if random.random() > extremity), 1)
+
+#this method interfaces with the database and selects a plant template based upon region, randomness-type, and crazy value
 	@classmethod
-	def select_weighted_plant_by_region(self, region, crazy_value=False):
+	def select_plant_by_region(self, region, crazy_value=False, true_random=False):
 		plants = Plant.objects.filter(continent_origin=region)
-		total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
-		cdf = []
-		cumulative_value = 0
-		for plant in plants:
-			cumulative_value += plant.common_value
-			cdf.append((cumulative_value + crazy_value - 0.000001) / total_occurence_value)
-		random_value = random.random() if not crazy_value else random.uniform(0.89, 0.99)
-		for i, value in enumerate(cdf):
-			if random_value <= value:
-				return plants[i]
+		if not true_random:
+			total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
+			cdf = []
+			cumulative_value = 0
+			for plant in plants:
+				cumulative_value += plant.common_value
+				cdf.append((cumulative_value + crazy_value - 0.000001) / total_occurence_value)
+			random_value = random.random() if not crazy_value else random.uniform(0.89, 0.99)
+			for i, value in enumerate(cdf):
+				if random_value <= value:
+					return plants[i]
+		else:
+			return random.choice(plants)
 		return None
 
 	@classmethod	
@@ -96,7 +105,7 @@ class PlantObject(Plant):
 		flower_count = {}
 		for i in range(count):
 			print('picking {} flowers...\r'.format(i),end='\r')
-			flower = self.select_weighted_plant_by_region(region)
+			flower = self.select_plant_by_region(region)
 			if flower.name not in flower_count:
 				flower_count[flower.name] = 0
 			flower_count[flower.name] += 1
