@@ -83,7 +83,7 @@ class PlantObject(Plant):
 
 #this method interfaces with the database and selects a plant template based upon region, randomness-type, and crazy value
 	@classmethod
-	def select_plant_by_region(self, region, crazy_value=False, true_random=False):
+	def select_plant_by_region(self, region, crazy_value=False, true_random=False, true_region=False):
 		plants = Plant.objects.filter(continent_origin=region)
 		if not true_random:
 			total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
