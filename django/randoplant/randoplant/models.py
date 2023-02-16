@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import Sum
-
+from random import random, uniform
 
 # class GameObject(models.Model):
 # 	game_object_id=models.IntegerField(null=False, db_index=True, on_delete=models.CASCADE)
@@ -65,6 +65,24 @@ class Plant(models.Model):
 		total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
 		return total_occurence_value
 
+	@classmethod
+	def select_plant_by_region(self, region, crazy_value=False, true_random=False, true_region=False):
+		plants = Plant.objects.filter(continent_origin=region)
+		if not true_random:
+			total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
+			cdf = []
+			cumulative_value = 0
+			for plant in plants:
+				cumulative_value += plant.common_value
+				cdf.append((cumulative_value + crazy_value - 0.000001) / total_occurence_value)
+			random_value = random() if not crazy_value else uniform(0.89, 0.99)
+			for i, value in enumerate(cdf):
+				if random_value <= value:
+					return plants[i]
+		else:
+			return random.choice(plants)
+		return None
+
 class Events(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
 	continent_origin=models.CharField(max_length=30,null=False,blank=True)
@@ -75,6 +93,10 @@ class Compound(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
 
 
+
+#eventually make this a foreign key to the Plant model and remove all the regional lookup crap from the PlantINstance
+class Region(models.Model):
+	name=models.TextField(max_length=50,null=False)
 	# def clean(self):
 		
 

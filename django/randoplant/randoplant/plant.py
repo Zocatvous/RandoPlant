@@ -14,7 +14,7 @@ from randoplant.models import Plant
 from django.db.models import Sum
 
 pd.set_option('display.max_rows', None)
-#All we want to do for the moment is make a class that looks up the "string" of the regional bias and loads the biases as a datafram to a dataframe object in an attribute. 
+#All we want to do for the moment is make a class that looks up the "string" of the region bias and loads the biases as a datafram to a dataframe object in an attribute. 
 
 '''
 underscored properties and attributes are "meta" sort of things that help drive the object functionally
@@ -24,7 +24,7 @@ but we are doing both at once for the time being
 
 
 Class kwargs are 
-- a currently mandatory regional bias flag
+- a currently mandatory region bias flag
 - a random flag for true random behavior
 - a wieghted mode for what will be used to generate all flowers according to region
 
@@ -41,8 +41,8 @@ E60 should be a variable called "extremity" calculated like this
 repeat=0
 class PlantObject(Plant):
 	'''all files for resources should be kept here and follow this convention'''
-	base_dir = os.path.dirname(os.path.abspath(__file__))
-	extremity_file_path = os.path.join(base_dir, "json", "extremity.json")
+	_base_dir = os.path.dirname(os.path.abspath(__file__))
+	_extremity_file_path = os.path.join(_base_dir, "json", "extremity.json")
 	
 	@classmethod
 	def _read_json_file(cls, file_name):
@@ -51,54 +51,58 @@ class PlantObject(Plant):
 
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
-		self.extremity_dict = PlantObject._read_json_file(PlantObject.extremity_file_path)
-		self.sizes = []
-		self.base = 10
-		self.region = self.get_region()
-		self.potence = self.get_potence()
-		self.extremity = self.get_extremity(region)
+		self.set_bool = (self.region is not None)
+		self.extremity_dict = PlantObject._read_json_file(PlantObject._extremity_file_path)
+		self.region_extremity = self.get_region_extremity(self.region) if self.set_bool else None
+		self.region_base =  self.set_region_base(self.region) if self.set_bool else None
+		self.region_power =  self.set_region_power(self.region) if self.set_bool else None
 
-	def get_region_extremity(self, region, modify=False):
-		return self.extremity_dict[region]['extremity']
+		self.base = self.set_base() if self.set_bool else None
+		self.extremeness =  self.set_extremeness(self.region) if self.set_bool else None
+		self.potence =  self.set_potence() if self.set_bool else None
+		self.size =  self.set_size() if self.set_bool else None
+		self.pprice = self.set_price() if (self.extremeness is not None) else None
 
-	def get_region_base(self,region,modify=False):
-		return self.extremity_dict[region]['base']
+	@property
+	def potence(self):
+		return self.potence
+	@property
+	def power(self):
+		return self.power
+	@property
+	def base(self):
+		return self.base
 
+	def get_region_extremity(self, modify=False):		
+		return self.extremity_dict[self.region]['extremity']
+	def get_region_base(self,modify=False):
+		return self.extremity_dict[self.region]['base']
 	def get_region_power(self,region, modify=False):
-		return self.extremity_dict[region]['power']
+		return self.extremity_dict[self.region]['power']
+	def set_extremeness(self, modify=False):
+		for i in range(1, 14):
+			if random.random() > self.region_extremity:
+				return i
+		return 13
+	def set_potence(self,modify=False):
+			low = 2 + self.base**(self.extremeness-1)
+			high = self.base ** self.extremeness
+			return random.randint(low,high)
+	def set_base(self, region, modify=False):
+		return self.region_base
 
-	def get_potence(self, region, modify=False):
-		potence = random.randint(2+)
-
-	def get_price(self):
-		pass
+	def set_price(ex):
+		#this is based upon a lookup of the plant price times the extremeness 
+		return ex*self.price
 
 #this is the master setter for all plant instance attributes - this will likely need a TON of 
 	def set_plant_object_instance(self, region):
 		r = random.random()		
 		plant = self.select_plant_by_region(region)
 		extremity = self.get_region_extremity(region)
-		potence = self.get_potence()
+		potence = self.set_potence()
 		ex_val =  next((i for i in range(1, 14) if random.random() > extremity), 1)
 
-#this method interfaces with the database and selects a plant template based upon region, randomness-type, and crazy value
-	@classmethod
-	def select_plant_by_region(self, region, crazy_value=False, true_random=False, true_region=False):
-		plants = Plant.objects.filter(continent_origin=region)
-		if not true_random:
-			total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
-			cdf = []
-			cumulative_value = 0
-			for plant in plants:
-				cumulative_value += plant.common_value
-				cdf.append((cumulative_value + crazy_value - 0.000001) / total_occurence_value)
-			random_value = random.random() if not crazy_value else random.uniform(0.89, 0.99)
-			for i, value in enumerate(cdf):
-				if random_value <= value:
-					return plants[i]
-		else:
-			return random.choice(plants)
-		return None
 
 	@classmethod	
 	def _test_profile_weighted_plants_in_region(self,count=100,region='centriss',run_all_regions=False):
@@ -116,7 +120,7 @@ class PlantObject(Plant):
 
 
 class PlantUtilities:
-	def __init__(self,regional_bias,random=False,weighted=False):
+	def __init__(self,region_bias,random=False,weighted=False):
 		#data is probably going to be assigned by inheritance from a game object
 		self._data = {"id":"UUID",
 		"date_created":"date_timestamp",
@@ -130,11 +134,11 @@ class PlantUtilities:
 		self.plant_name = None
 		self.regions = {1:'Centriss',2:'Tentacular',3:'Mormiria',4:'Tirelessnight',5:'Reyawinn',0:'Xilewood'}
 		self.locaitons=None
-		self.regional_bias = (regional_bias,self.get_regional_bias_int(regional_bias))
-		#self.all_plantnames_in_region=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe'].iloc[1,:][1:].tolist()
+		self.region_bias = (region_bias,self.get_region_bias_int(region_bias))
+		#self.all_plantnames_in_region=self._plant_bias_obj[self.regions[self.region_bias[1]]]['_dataframe'].iloc[1,:][1:].tolist()
 		self._plant_id = "create a unique ID based upon a generated NAME for the plant so I can identify when stuff gets made"
 		self.potence = -1
-	def get_regional_bias_int(self,r):
+	def get_region_bias_int(self,r):
 		return [i for i in self.regions if self.regions[i]==r][0]
 	def _sanitize_bias_keystring(self,filepath):
 		return re.search(r'.*\_',filepath).group(0)[7:-1].capitalize()
@@ -172,7 +176,7 @@ class PlantUtilities:
 		self.plant=plant
 		return plant
 	def get_rgn_weighted_plant(self):
-		df=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe']
+		df=self._plant_bias_obj[self.regions[self.region_bias[1]]]['_dataframe']
 		options=df.iloc[1].tolist()[1:] #MIGHT NEED TO TAKE THIS OUT
 		weights=np.array([i for i in df.iloc[0,:]][1:]).astype(float)
 		cdf=np.cumsum(weights/np.sum(weights))
@@ -183,7 +187,7 @@ class PlantUtilities:
 		return plant
 	def get_random_plant(self,rgn=None):
 		if rgn==None:
-			rgn=self.regional_bias[1]
+			rgn=self.region_bias[1]
 		else:
 			raise NameError('Need to specify a Region in the class declaration')
 		col=random.randint(0,self._plant_bias_obj[self.regions[rgn]]['_dataframe'].shape[1]-1)
@@ -218,7 +222,7 @@ class PlantUtilities:
 			raise NameError(f'Please enter a valid region: {self.regions}')
 	def get_plant_potence(self):
 		if self.plant is not None:
-			df=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe']			
+			df=self._plant_bias_obj[self.regions[self.region_bias[1]]]['_dataframe']			
 			weights=np.array([i for i in df.iloc[0,:]][1:]).astype(float)
 			sum_wgt=np.sum(weights)
 			#this needs to be set by the region or something...maybe this is manipulated by a character level
@@ -235,7 +239,7 @@ class PlantUtilities:
 		#this method is going to make a huge list of tuples that will be massive - around a thousand elements per use. so it needs to be fast - maybe it needs to be a numpy array
 		check_bool=(self.plant is not None)
 		if check_bool:
-			df=self._plant_bias_obj[self.regions[self.regional_bias[1]]]['_dataframe']
+			df=self._plant_bias_obj[self.regions[self.region_bias[1]]]['_dataframe']
 			occur_range=df.iloc[0][1:].astype(int).sum()
 			occur_val=self.plant['values'][0]
 			return float(occur_val)/occur_range
