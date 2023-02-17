@@ -1,7 +1,7 @@
 import os
 from django_extensions 
-from randoplant.plant import PlantUtilities
-from randoplant.models import Plant
+from .plant import PlantUtilities
+from .models import Plant
 from django.conf import settings
 from django.apps import apps
 import re
@@ -13,11 +13,11 @@ import re
 
 
 def extract_substring(string):
-    match = re.search(r'/bias/(.*?)_bias', string)
-    if match:
-        return match.group(1)
-    else:
-        return None
+	match = re.search(r'/bias/(.*?)_bias', string)
+	if match:
+		return match.group(1)
+	else:
+		return None
 
 
 def creater(series,k):

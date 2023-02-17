@@ -10,7 +10,7 @@ import json
 import pandas as pd
 
 #django
-from randoplant.models import Plant
+from randoplant.models import Plant, Region, Size
 from django.db.models import Sum
 
 pd.set_option('display.max_rows', None)
@@ -39,84 +39,52 @@ E60 should be a variable called "extremity" calculated like this
 
 '''
 repeat=0
-class PlantObject(Plant):
+class PlantObject():
 	'''all files for resources should be kept here and follow this convention'''
 	_base_dir = os.path.dirname(os.path.abspath(__file__))
 	_extremity_file_path = os.path.join(_base_dir, "json", "extremity.json")
-	
+	# _sizes_file_path = os.path.join(_base_dir, "json", "size.json")
+
 	@classmethod
-	def _read_json_file(cls, file_name):
+	def _read_json(cls, file_name):
 		with open(file_name, 'r') as f:
 			return json.load(f)
 
-	def __init__(self, *args, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.set_bool = (self.region is not None)
-		self.extremity_dict = PlantObject._read_json_file(PlantObject._extremity_file_path)
-		self.region_extremity = self.get_region_extremity(self.region) if self.set_bool else None
-		self.region_base =  self.set_region_base(self.region) if self.set_bool else None
-		self.region_power =  self.set_region_power(self.region) if self.set_bool else None
+	def __init__(self,plant=None, *args, **kwargs):
+		self.plant = plant
+		self.set_bool = (self.plant.continent_origin is not None)
+		self.region = Region.objects.filter(plant__name=self.plant.name) if self.set_bool else None
+		self.region_extremity = Region.objects.get(name=self.plant.continent_origin).extremity
+		self.region_base =  Region.objects.get(name=self.plant.continent_origin).base
+		self.region_power =  Region.objects.get(name=self.plant.continent_origin).power
 
-		self.base = self.set_base() if self.set_bool else None
-		self.extremeness =  self.set_extremeness(self.region) if self.set_bool else None
+		# self.base = self.set_base() if self.set_bool else None
+		self.extremeness =  self.set_extremeness() if self.set_bool else None
 		self.potence =  self.set_potence() if self.set_bool else None
-		self.size =  self.set_size() if self.set_bool else None
-		self.pprice = self.set_price() if (self.extremeness is not None) else None
 
-	@property
-	def potence(self):
-		return self.potence
-	@property
-	def power(self):
-		return self.power
-	@property
-	def base(self):
-		return self.base
+		#extremeness contingent attributes
+		self.size =  Size.objects.get(self.extremeness) if (self.extremeness is not None) else None
+		self.value = self.set_value() if (self.extremeness is not None) else None
 
-	def get_region_extremity(self, modify=False):		
-		return self.extremity_dict[self.region]['extremity']
-	def get_region_base(self,modify=False):
-		return self.extremity_dict[self.region]['base']
-	def get_region_power(self,region, modify=False):
-		return self.extremity_dict[self.region]['power']
+	# def get_region_extremity(self, modify=False):
+	# 	return self.extremity_dict[self.instance_region]['extremity']
+	# def get_region_base(self,modify=False):
+	# 	return self.extremity_dict[self.instance_region]['base']
+	# def get_region_power(self, modify=False):
+	# 	return self.extremity_dict[self.instance_region]['power']
 	def set_extremeness(self, modify=False):
 		for i in range(1, 14):
 			if random.random() > self.region_extremity:
 				return i
 		return 13
 	def set_potence(self,modify=False):
-			low = 2 + self.base**(self.extremeness-1)
-			high = self.base ** self.extremeness
+			low = 2 + self.region_base**(self.extremeness-1)
+			high = self.region_base**self.extremeness
 			return random.randint(low,high)
-	def set_base(self, region, modify=False):
-		return self.region_base
 
-	def set_price(ex):
+	def set_value(self, modify=False):
 		#this is based upon a lookup of the plant price times the extremeness 
-		return ex*self.price
-
-#this is the master setter for all plant instance attributes - this will likely need a TON of 
-	def set_plant_object_instance(self, region):
-		r = random.random()		
-		plant = self.select_plant_by_region(region)
-		extremity = self.get_region_extremity(region)
-		potence = self.set_potence()
-		ex_val =  next((i for i in range(1, 14) if random.random() > extremity), 1)
-
-
-	@classmethod	
-	def _test_profile_weighted_plants_in_region(self,count=100,region='centriss',run_all_regions=False):
-		flower_count = {}
-		for i in range(count):
-			print('picking {} flowers...\r'.format(i),end='\r')
-			flower = self.select_plant_by_region(region)
-			if flower.name not in flower_count:
-				flower_count[flower.name] = 0
-			flower_count[flower.name] += 1
-		pprint.pprint(flower_count)
-		return flower_count
-
-
+		return self.extremeness*self.plant.total_occurence_for_region(str(self.instance_region))
 
 
 class PlantUtilities:
@@ -171,6 +139,54 @@ class PlantUtilities:
 		pass
 	def get_plant_price(self):
 		pass
+
+	#USE THIS TO REBUILD THE DATABASE OF PLANTS!!! (for now)
+	def create_plants(self):
+		def maker(series,continent):
+			p1 = Plant.objects.create(
+			name=series[1],
+			occurence_value=0,
+			common_value=series[0].replace('%', ''),
+			metal=series[2].replace('%', ''),
+			animal=series[3].replace('%', ''),
+			body_control=series[4].replace('%', ''),
+			comm_and_emp=series[5].replace('%', ''),
+			earth=series[6].replace('%', ''),
+			enchantment=series[7].replace('%', ''),
+			fire=series[8].replace('%', ''),
+			food=series[9].replace('%', ''),
+			healing=series[10].replace('%', ''),
+			illusion_and_creation=series[11].replace('%', ''),
+			knowledge=series[12].replace('%', ''),
+			light_and_dark=series[13].replace('%', ''),
+			make_and_break=series[14].replace('%', ''),
+			meta=series[15].replace('%', ''),
+			mind_control=series[16].replace('%', ''),
+			movement=series[17].replace('%', ''),
+			necromantic=series[18].replace('%', ''),
+			plant=series[19].replace('%', ''),
+			protection=series[20].replace('%', ''),
+			sounds=series[21].replace('%', ''),
+			water=series[22].replace('%', ''),
+			weather=series[23].replace('%', ''),
+			price=series[24].replace('$', ''),
+			culinary=series[25].replace('%', ''),
+			poison=series[26],
+			defense=series[27],
+			chemical=series[28],
+			symbolic=series[29],
+			antidote=series[30],
+			continent_origin=Region.objects.filter(name=continent).first())
+			p1.save()
+		frames = self._plant_bias_obj
+		for continent, frame in frames.items():
+			print(f'Working on {continent}')
+			for col, series in frame['_dataframe'].iteritems():
+				if (series[0] == 'Common value'):
+					continue
+				else:
+					print(f'Inserting {series[1]}')
+					maker(series,continent)
 	def get_plant(self,rgn,col):
 		plant = self._plant_bias_obj[self.regions[rgn]]['_dataframe'].iloc[:,[0,col]]
 		self.plant=plant
