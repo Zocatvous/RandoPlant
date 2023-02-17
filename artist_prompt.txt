@@ -1,0 +1,97 @@
+Hey Myduong,
+
+thanks for the prompt reply! I am looking to initially get an idea of what kind of inspiriation and artistic direction you would get for a single plant. This game is all about highly detailed plants with lots of uses and functions. About their history and relation to a world of much deeper mysteries.
+
+I have many different plants that i would love to have assets for but I think initially I would like to see just one plant in a few different phases of growth and potency as this will be one of the dimensions that will change which asset the game will select to display to the player.
+
+The different plant sizes that are possible for a single plant are - in increasing size:
+
+Puny
+Tiny
+Small
+Medium
+Large
+Very Large
+Jumbo
+Humongus
+Massive
+Gigantic
+Collosal
+Cyclopean
+Primodial
+
+
+The assets should be small enough that they can be easily called by an API call without issues with latency - (they also dont need to be very complicated) differences in size can be indicated as subtly or as grandiosely as you see fit within the parameters I've given here.
+
+Additionally there are a number of different "affinities" that a plant can have in addition to its size which can be indicated by color filters/overlays or anything else that makes minimal alterations to the underlying "size corresponding image" etc.
+
+Steel - Metal
+Wild - Animal Spells
+Bloody - Body Control Spells
+Pleasant - Communication Spells
+Solid - Earth
+Ethereal Enchantment
+Flickering - Fire
+Nutritious - Food
+Comforting - Healing
+Ephemeral - Illusion + Creation
+Erudite - Knowledge
+Radiant -  Light + Dark
+Staid - Structural Spells
+Fractal  -  Meta-spells
+Alluring -  Mind Control
+Shuddering  - Movement
+Abyssal -  Necromantic
+Virdant -  Plant Spells
+Shrouded  - Protection
+Quiet -  Sound
+Flowing  - Water
+Storming -  Weather
+Delicious  - Flavor
+
+
+Im very interested for starters to just see a single plant done with a handful of different 4 size categories for each plant and affinities to see what kind of design direction you would take with each particular asset, Also - please consider the criteria as guidelines and not rules. Im looking for someone that I can hopefully come back to for more follow up images if I like the direction you take visually.
+
+The four sizes can be broken up into tiers:
+
+Tier 1 - (puny, tiny, small, medium) - This will be one asset for a plant
+Tier 2 - (Large, Very Large, Jumbo, Humongus) - 1 Asset per plant
+Tier 3 - (Massive, Gigantic, Colossal, Cyclopean) - 1 Asset per plant
+Tier 4 - Primodial - 1 Asset per plant (this one can be crazy)
+
+I'll include some reference images in my next message so you have those as well with some commentary about how they relate to my objective.
+All that is left now is to select a single plant from the list below to generate a sprite sheet for and I will send you a paragraph of lore relating to it.
+
+Scrubling
+Thistlelint
+Whistlereed
+Whyren's Wart
+Ulthrad's Bloom
+Cabbage
+Carrot
+Whitegrass
+Tincap
+Deathcap
+EagleBlossom
+Tympanie
+Potato
+Elemental Blossom
+MindBloom
+Thunderblossom
+Panchuma
+Cinderbloom
+Aisob Leaf
+Artichoke
+Tiger Lily
+Wheat
+Arrowroot
+Seamint
+Spiral Rose
+Tower Tuft
+Pure Diamond Rose
+Jet Black Rose
+Frond of the Oasis Palm Tree
+Powder Orchid
+Super Nightshade
+
+Thank you!

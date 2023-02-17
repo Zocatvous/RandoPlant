@@ -53,18 +53,26 @@ class PlantObject():
 	def __init__(self,plant=None, *args, **kwargs):
 		self.plant = plant
 		self.set_bool = (self.plant.continent_origin is not None)
-		self.region = Region.objects.filter(plant__name=self.plant.name) if self.set_bool else None
-		self.region_extremity = Region.objects.get(name=self.plant.continent_origin).extremity
-		self.region_base =  Region.objects.get(name=self.plant.continent_origin).base
-		self.region_power =  Region.objects.get(name=self.plant.continent_origin).power
+		self.region = Region.objects.get(name=self.plant.region.name) if self.set_bool else None
+		#self.region = Region.objects.get(name=self.plant.continent_origin) if self.set_bool else None
+		self.region_extremity = self.region.extremity
+		self.region_base =  self.region.base
+		self.region_power =  self.region.power
 
 		# self.base = self.set_base() if self.set_bool else None
 		self.extremeness =  self.set_extremeness() if self.set_bool else None
 		self.potence =  self.set_potence() if self.set_bool else None
 
 		#extremeness contingent attributes
-		self.size =  Size.objects.get(self.extremeness) if (self.extremeness is not None) else None
+		self.size =  Size.objects.get(id=self.extremeness+1) if (self.extremeness is not None) else None
 		self.value = self.set_value() if (self.extremeness is not None) else None
+
+		self.affinities = None
+
+
+	def __str__(self):
+		return f"{self.size.pretty_name} {self.affinities} {self.plant.name}"
+
 
 	# def get_region_extremity(self, modify=False):
 	# 	return self.extremity_dict[self.instance_region]['extremity']
@@ -84,7 +92,10 @@ class PlantObject():
 
 	def set_value(self, modify=False):
 		#this is based upon a lookup of the plant price times the extremeness 
-		return self.extremeness*self.plant.total_occurence_for_region(str(self.instance_region))
+		return self.extremeness*self.plant.total_occurence_for_region(str(self.region.name))
+
+	def set_affinities_from_potence(self):
+		pass
 
 
 class PlantUtilities:

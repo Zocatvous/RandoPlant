@@ -17,6 +17,7 @@ class Region(models.Model):
 	base = models.IntegerField(default=0, null=True)
 	extremity = models.IntegerField(default=0, null=True)
 	power = models.IntegerField(default=0, null=True)
+	pretty_name = models.TextField(max_length=20, null=True)
 	# nissia_region_affinity = models.FloatField(default=0.0)
 	# thewhip_region_affinity = models.FloatField(default=0.0)
 	# kellarn_region_affinity = models.FloatField(default=0.0)
@@ -38,7 +39,7 @@ class Region(models.Model):
 	# mormiria_region_affinity = models.FloatField(default=0.0)
 	# reyawinn_region_affinity = models.FloatField(default=0.0)
 	def __str__(self):
-		return f"{self.name}"
+		return f"{self.pretty_name}"
 
 class Plant(models.Model):
 	#game_object_id=models.ForeignKey(GameObject, related_name="plant", on_delete=models.CASCADE)
@@ -93,15 +94,24 @@ class Plant(models.Model):
 		rarity = ((self.common_value / self.total_occurence_for_region(self.continent_origin)))
 		return round(rarity, 4)
 
+
 	@classmethod
-	def total_occurence_for_region(self, region):
-		plants = Plant.objects.filter(continent_origin=region)
+	def total_occurence_for_region(cls, region):
+		if isinstance(region, str):
+			region_name = region
+		elif isinstance(region, Region):
+			region_name = region.name
+		else:
+			raise TypeError(f"Invalid region type: {type(region)}")
+
+		plants = Region.objects.get(name=region_name.lower().replace(' ','')).plants.all()
 		total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
 		return total_occurence_value
 
 	@classmethod
 	def select_plant_by_region(self, region, crazy_value=False, true_random=False, true_region=False):
-		plants = Plant.objects.filter(continent_origin=region)
+		plants = Region.objects.get(name=region).plants.all()
+		# plants = p_region.plants.all()
 		if not true_random:
 			total_occurence_value = plants.aggregate(Sum('common_value'))['common_value__sum']
 			cdf = []
@@ -132,9 +142,9 @@ class Plant(models.Model):
 class Size(models.Model):
 	name=models.TextField(max_length=50,null=False)
 	pretty_name=models.TextField(max_length=25,null=False)
-	lookup_id=models.IntegerField(default=0)
+
 	def __str__(self):
-		return f"{self.pretty_name} - ({self.lookup_id})"
+		return f"{self.pretty_name} - ({self.id})"
 
 class Events(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
@@ -145,6 +155,10 @@ class Events(models.Model):
 class Compound(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
 	# ingredients=ArrayField(models.CharField(max_length=50), default=list)
+
+class Affinities(models.Model):
+	name=CharField(max_length=30,null=True)
+	adjective=CharField(max_length=30,null=True)
 
 # class Continent(models.GameObject):
 # 	game_object_id-models.ForiegnKey(GameObject, related_name='continent', on_delete=models.CASCADE)
