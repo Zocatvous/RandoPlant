@@ -156,7 +156,7 @@ class Compound(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
 	# ingredients=ArrayField(models.CharField(max_length=50), default=list)
 
-class Affinities(models.Model):
+class Affinity(models.Model):
 	name=CharField(max_length=30,null=True)
 	adjective=CharField(max_length=30,null=True)
 
