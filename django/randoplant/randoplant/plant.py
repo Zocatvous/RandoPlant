@@ -73,6 +73,9 @@ class PlantObject():
 	def __str__(self):
 		return f"{self.size.pretty_name} {self.affinities} {self.plant.name}"
 
+	def __repr__(self):
+		return f"PlantObject(Name:({self.size.pretty_name} {'(none)' if (self.affinities is None) else self.affinities} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
+
 
 	# def get_region_extremity(self, modify=False):
 	# 	return self.extremity_dict[self.instance_region]['extremity']
