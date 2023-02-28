@@ -157,8 +157,8 @@ class Compound(models.Model):
 	# ingredients=ArrayField(models.CharField(max_length=50), default=list)
 
 class Affinity(models.Model):
-	name=CharField(max_length=30,null=True)
-	adjective=CharField(max_length=30,null=True)
+	name=models.CharField(max_length=30,null=True)
+	adjective=models.CharField(max_length=30,null=True)
 
 # class Continent(models.GameObject):
 # 	game_object_id-models.ForiegnKey(GameObject, related_name='continent', on_delete=models.CASCADE)

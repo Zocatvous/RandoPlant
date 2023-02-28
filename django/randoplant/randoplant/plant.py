@@ -52,7 +52,7 @@ class PlantObject():
 
 	def __init__(self,plant=None, *args, **kwargs):
 		self.plant = plant
-		self.set_bool = (self.plant.continent_origin is not None)
+		self.set_bool = self.plant.continent_origin is not None
 		self.region = Region.objects.get(name=self.plant.region.name) if self.set_bool else None
 		#self.region = Region.objects.get(name=self.plant.continent_origin) if self.set_bool else None
 		self.region_extremity = self.region.extremity
@@ -92,7 +92,7 @@ class PlantObject():
 
 	def set_value(self, modify=False):
 		#this is based upon a lookup of the plant price times the extremeness 
-		return self.extremeness*self.plant.total_occurence_for_region(str(self.region.name))
+		return (self.potence*self.plant.total_occurence_for_region(str(self.region.name)))**self.extremeness
 
 	def set_affinities_from_potence(self):
 		pass
