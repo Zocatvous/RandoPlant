@@ -15,7 +15,7 @@ from random import random, uniform
 class Region(models.Model):
 	name = models.TextField(max_length=50, null=False)
 	base = models.IntegerField(default=0, null=True)
-	extremity = models.IntegerField(default=0, null=True)
+	extremity = models.FloatField(default=0, null=True)
 	power = models.IntegerField(default=0, null=True)
 	pretty_name = models.TextField(max_length=20, null=True)
 	# nissia_region_affinity = models.FloatField(default=0.0)

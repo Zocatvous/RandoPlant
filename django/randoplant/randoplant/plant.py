@@ -91,7 +91,9 @@ class PlantObject():
 	def set_potence(self,modify=False):
 			low = 2 + self.region_base**(self.extremeness-1)
 			high = self.region_base**self.extremeness
-			return random.randint(low,high)
+			n = random.randint(low,high)
+			print(f'rgn_extrem:{self.region_extremity} base:{self.region_base} extr:{self.extremeness} low:{low},high:{high} pot:{n}')
+			return n
 
 	def set_value(self, modify=False):
 		#this is based upon a lookup of the plant price times the extremeness 
