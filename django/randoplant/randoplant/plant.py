@@ -64,7 +64,7 @@ class PlantObject():
 		self.potence =  self.set_potence() if self.set_bool else None
 
 		#extremeness contingent attributes
-		self.size =  Size.objects.get(id=self.extremeness+1) if (self.extremeness is not None) else None
+		self.size =  Size.objects.get(id=self.extremeness) if (self.extremeness is not None) else None
 		self.value = self.set_value() if (self.extremeness is not None) else None
 
 		self.affinities = None
@@ -92,12 +92,13 @@ class PlantObject():
 			low = 2 + self.region_base**(self.extremeness-1)
 			high = self.region_base**self.extremeness
 			n = random.randint(low,high)
-			print(f'rgn_extrem:{self.region_extremity} base:{self.region_base} extr:{self.extremeness} low:{low},high:{high} pot:{n}')
+			#print(f'rgn_extrem:{self.region_extremity} base:{self.region_base} extr:{self.extremeness} low:{low},high:{high} pot:{n}')
 			return n
 
 	def set_value(self, modify=False):
-		#this is based upon a lookup of the plant price times the extremeness 
-		return (self.potence*self.plant.total_occurence_for_region(str(self.region.name)))**self.extremeness
+		#this is based upon a lookup of the plant price times the extremeness
+		val = (self.potence*self.plant.total_occurence_for_region(str(self.region.name)))**self.extremeness
+		return int(str(val)[:15])
 
 	def set_affinities_from_potence(self):
 		pass
