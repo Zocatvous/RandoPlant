@@ -33,6 +33,7 @@ class AlchemyFactory:
 
 
 	def calculate_potion_duration_magnitude(self, Base_Mag=1,Base_Dur=1)
-	Base_Dur
+		Base_Mag = ((Effective_Alchemy + MortarPestle_Strength*25)/(Effect_Base_Cost/10 * 4)) **  (1/2.28)
+		Base_Dur = 4 * Base_Mag
 		Magnitude = Base_Mag * (1 + Calc_Fac*Calcinator_Strength + Ret_Mag_Fac*Retort_Strength- Alem_Fac*Alembic_Strength)
 		Duration = Base_Dur * (1 + Calc_Fac*Calcinator_Strength + Ret_Dur_Fac*Retort_Strength- Alem_Fac*Alembic_Strength)
