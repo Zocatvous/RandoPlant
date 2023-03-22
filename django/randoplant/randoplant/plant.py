@@ -36,7 +36,6 @@ Heres a function that needs to generate an integer that fits the specified crite
 
 F59 should be a variable called "base"
 E60 should be a variable called "extremity" calculated like this
-
 '''
 repeat=0
 class PlantObject():
@@ -51,7 +50,7 @@ class PlantObject():
 			return json.load(f)
 
 	def __init__(self,plant=None, *args, **kwargs):
-		self.plant = plant
+		self.plant = plant[0]
 		self.set_bool = self.plant.continent_origin is not None
 		self.region = Region.objects.get(name=self.plant.region.name) if self.set_bool else None
 		#self.region = Region.objects.get(name=self.plant.continent_origin) if self.set_bool else None
@@ -67,7 +66,7 @@ class PlantObject():
 		self.size =  Size.objects.get(id=self.extremeness) if (self.extremeness is not None) else None
 		self.value = self.set_value() if (self.extremeness is not None) else None
 
-		self.affinities = None
+		self.affinities = self.generate_instance_biases() if (self.potence is not None) else None
 
 
 	def __str__(self):
@@ -77,12 +76,6 @@ class PlantObject():
 		return f"PlantObject(Name:({self.size.pretty_name} {'(none)' if (self.affinities is None) else self.affinities} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
 
 
-	# def get_region_extremity(self, modify=False):
-	# 	return self.extremity_dict[self.instance_region]['extremity']
-	# def get_region_base(self,modify=False):
-	# 	return self.extremity_dict[self.instance_region]['base']
-	# def get_region_power(self, modify=False):
-	# 	return self.extremity_dict[self.instance_region]['power']
 	def set_extremeness(self, modify=False):
 		for i in range(1, 14):
 			if random.random() > self.region_extremity:
@@ -94,15 +87,28 @@ class PlantObject():
 			n = random.randint(low,high)
 			#print(f'rgn_extrem:{self.region_extremity} base:{self.region_base} extr:{self.extremeness} low:{low},high:{high} pot:{n}')
 			return n
-
 	def set_value(self, modify=False):
 		#this is based upon a lookup of the plant price times the extremeness
 		val = (self.potence*self.plant.total_occurence_for_region(str(self.region.name)))**self.extremeness
 		return int(str(val)[:15])
 
+	#master function for setting the final object of potences for the plant instance
 	def set_affinities_from_potence(self):
 		pass
 
+	def generate_affinity_probability(self,affinity_percentage):
+		return (random.random()*affinity_percentage)**self.region_power
+
+	def generate_instance_biases(self):
+		biases_dict = {}
+		totalAffinityProbability = self.plant.total_affinity_percentage
+		for field in self.plant.get_float_fields():
+			probability=self.generate_affinity_probability(getattr(self.plant, str(field.name)))
+			ptence=self.potence*probability
+			biases_dict.setdefault(str(field.name), {}).setdefault({'probability', self.generate_affinity_probability(getattr(self.plant,str(field.name))),'potence', ptence})
+
+	# 	computedAffinityPotence = self.potence*(expectedAffinityProbability/totalAffinityProbability)
+		return biases_dict
 
 class PlantUtilities:
 	def __init__(self,region_bias,random=False,weighted=False):

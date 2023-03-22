@@ -82,8 +82,19 @@ class Plant(models.Model):
 	def __str__(self):
 		return f"<{self.name} - Commonality:{self.common_value}/{self.total_occurence_for_region(self.continent_origin)}>"
 
+	@classmethod
+	def get_float_fields(self):
+		#place all float fields that are not to be summed
+		not_list = set(['price'])
+		return list(set([field for field in self._meta.get_fields() if isinstance(field, models.FloatField)]).difference(not_list))
+
 	def get_highest_plant_affinity(self):
 		pass
+
+	@property
+	def total_affinity_percentage(self):
+		# float_fields = [field for field in self._meta.get_fields() if isinstance(field, models.FloatField)] - not_list
+		return sum(getattr(self, field.name) for field in self.get_float_fields())
 
 	@property
 	def region(self):
