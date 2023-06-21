@@ -73,7 +73,7 @@ class PlantObject():
 		return f"{self.size.pretty_name} {self.affinities} {self.plant.name}"
 
 	def __repr__(self):
-		return f"PlantObject(Name:({self.size.pretty_name} {'(none)' if (self.affinities is None) else self.affinities} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
+		return f"PlantObject< Name:({self.size.pretty_name} {'(none)' if (self.affinities is None) else None} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
 
 
 	def set_extremeness(self, modify=False):
@@ -105,7 +105,8 @@ class PlantObject():
 		for field in self.plant.get_float_fields():
 			probability=self.generate_affinity_probability(getattr(self.plant, str(field.name)))
 			ptence=self.potence*probability
-			biases_dict.setdefault(str(field.name), {}).setdefault({'probability', self.generate_affinity_probability(getattr(self.plant,str(field.name))),'potence', ptence})
+			biases_dict.setdefault(str(field.name), {'probability': self.generate_affinity_probability(getattr(self.plant, str(field.name))), 'potence': ptence})
+		#	biases_dict.setdefault(str(field.name), {}).setdefault({'probability', self.generate_affinity_probability(getattr(self.plant,str(field.name))),'potence', ptence})
 
 	# 	computedAffinityPotence = self.potence*(expectedAffinityProbability/totalAffinityProbability)
 		return biases_dict
