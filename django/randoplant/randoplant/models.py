@@ -73,6 +73,7 @@ class Plant(models.Model):
 	culinary=models.CharField(max_length=50, default=None,null=True,blank=True)
 	poison=models.CharField(max_length=50, default=None,null=True,blank=True)
 	defense=models.TextField(default=None,null=True,blank=True)
+	flavor=models.FloatField(default=0.0,null=True,blank=True)
 	chemical=models.CharField(default=0.0,null=True,blank=True,max_length=200)
 	symbolic=models.TextField(default=0.0,null=True,blank=True,max_length=200)
 	antidote=models.CharField(default=0.0,null=True,blank=True,max_length=200)
@@ -171,6 +172,9 @@ class Compound(models.Model):
 class Affinity(models.Model):
 	name=models.CharField(max_length=30,null=True)
 	adjective=models.CharField(max_length=30,null=True)
+
+	def __repr__(self):
+		return f'<Affinity: {self.adjective} - {self.name}>'
 
 class Effect(models.Model):
 	name=models.CharField(max_length=30,null=True)

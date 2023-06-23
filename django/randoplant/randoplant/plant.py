@@ -57,7 +57,7 @@ class PlantObject():
 	def __init__(self,plant=None, *args, **kwargs):
 		self.plant_instance_dataframe_dtypes = {'affinityName':np.str, 'affinityProbability':np.float, 'weightedMarginalAffinity':np.float, 'normalizedAffinity':np.float, 'computedAffinityPotence':np.float, 'affinityRank':np.int}
 		self.plant_instance_dataframe_columns = ['affinityName', 'affinityProbability', 'weightedMarginalAffinity', 'normalizedAffinity', 'computedAffinityPotence','affinityRank']
-	
+		self.plant_df = None
 		self.plant = plant[0]
 		self.set_bool = self.plant.continent_origin is not None
 		self.region = Region.objects.get(name=self.plant.region.name) if self.set_bool else None
@@ -75,20 +75,29 @@ class PlantObject():
 		self.value = self.set_value() if (self.extremeness is not None) else None
 
 		self.affinities = self.generate_instance_biases() if (self.potence is not None) else None
-
+		self.name = f"<<({self.size.pretty_name} {self.get_dominant_affinity_adjective() if (self.affinities is None) else None} {self.plant.name}>>"
 
 	def __str__(self):
-		return f"{self.size.pretty_name} {self.affinities} {self.plant.name}"
+		return f"{self.size.pretty_name} {self.get_dominant_affinity_adjective()} {self.plant.name}"
 
 	def __repr__(self):
-		return f"< Name:({self.size.pretty_name} {'(none)' if (self.affinities is None) else None} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
+		return f"< Name:({self.size.pretty_name} {Affinity.objects.get(name=self.get_dominant_affinity_adjective()) if (self.affinities is not None) else None} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
 
+	def get_dominant_affinity_adjective(self,verbose=False):
+		if self.plant_df is None:
+			return None
+		entry = str(self.plant_df[self.plant_df['finalAffinityPotence'] == self.plant_df['finalAffinityPotence'].max()]['affinityName'].iloc[0])
+		adjective = Affinity.objects.get(name=str(entry)).adjective
+		if verbose:
+			print(f'{Affinity.objects.get(name=str(entry)).adjective} {entry}')
+		return Affinity.objects.get(name=str(entry)).adjective
 
 	def set_extremeness(self, modify=False):
 		for i in range(1, 14):
 			if random.random() > self.region_extremity:
 				return i
 		return 13
+
 	def set_potence(self,modify=False):
 			low = 2 + self.region_base**(self.extremeness-1)
 			high = self.region_base**self.extremeness
@@ -100,17 +109,10 @@ class PlantObject():
 		val = (self.potence*self.plant.total_occurence_for_region(str(self.region.name)))**self.extremeness
 		return int(str(val)[:15])
 
-	#master function for setting the final object of potences for the plant instance
-	def set_affinities_from_potence(self):
-		pass
-
 	def generate_affinity_probability(self,affinity_percentage):
-		i=random.random()
-		# print(f'	...computing affinity {i} x {affinity_percentage/100}^{self.region_power} = {(i*affinity_percentage)**self.region_power}')
-		# time.sleep(1)
-		return (i*(affinity_percentage/100)) ** self.region_power
+		return (random.random()*(affinity_percentage/100)) ** self.region_power
 
-	def generate_instance_biases(self):
+	def generate_instance_biases(self, verbose=False):
 		biases_dict = {}
 		plant_float_fields = self.plant.get_float_fields()
 		random.shuffle(plant_float_fields)
@@ -126,33 +128,22 @@ class PlantObject():
 		plant_df['normalizedAffinity'] = plant_df['weightedMarginalAffinity'] / total_marginal_affinity
 		plant_df['computedAffinityPotence'] = plant_df['normalizedAffinity']*self.potence
 		plant_df['finalAffinityPotence'] = round(plant_df['computedAffinityPotence']).astype(int)
+		plant_df.sort_values(by='finalAffinityPotence', ascending=True)
 		plant_df['affinityRank'] = plant_df['computedAffinityPotence'].rank(method='min', ascending=False).astype(int)
 		#assign the raw data to the plant_df attr
-		self.plant_df = plant_df.sort_values(by='affinityRank', ascending=True)
-		# print(f'{self.plant} - pt:{self.potence}')
-		# # print(self.plant_df)
+		self.plant_df = plant_df.sort_values(by='finalAffinityPotence', ascending=False)
+		biases_df = plant_df[plant_df['finalAffinityPotence'] != 0].sort_values(by='finalAffinityPotence', ascending=False)
+		for idx, row in biases_df.iterrows():
+			biases_dict.setdefault('affinities', {}).update({row['affinityName']:row['finalAffinityPotence']})
+		biases_dict['potence'] = self.potence
+		biases_dict['name'] = f"{self.size.pretty_name}_{self.get_dominant_affinity_adjective()}_{self.plant.name}".lower()
+		biases_dict['price'] = 0
+		return biases_dict
 
+		if verbose:pprint.pprint(biases_dict)
 
-
-
-		# for field in plant_float_fields:
-		# 	#compute normalized weights for affinities
-		# 	if gendtotalAffinityProbability < potencyTotalAffinityValue:
-		# 		p = self.generate_affinity_probability(getattr(self.plant, str(field.name)))
-		# 		print(f'generated {field.name}:{p} ..appending')
-		# 		time.sleep(1)
-		# 		p=probability*(self.potence)
-		# 		biases_dict.setdefault(str(field.name), {'probability': p})
-		# 	else:
-		# 		biases_dict.setdefault(str(field.name), {'probability': 0})
-		# # pprint.pprint(biases_dict)
-		# 	biases_dict.setdefault(str(field.name), {}).setdefault({'probability', self.generate_affinity_probability(getattr(self.plant,str(field.name))),'potence', ptence})
-		# #at this point the affinity numbers are set 
-		# #now I just need to loop over and compute the "college"
-		# print(f'gendtotalAffinityProbability = {gendtotalAffinityProbability}')
-		# #computedAffinityPotence = self.potence*(expectedAffinityProbability/totalAffinityProbability)
-		# return biases_dict
-
+	def generate_instance_object(self):
+		self.plant_obj
 
 class PlantUtilities:
 	def __init__(self,region_bias,random=False,weighted=False):
