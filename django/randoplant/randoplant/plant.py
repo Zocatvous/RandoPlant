@@ -1,5 +1,6 @@
 import pprint
 from bisect import bisect_left
+import time
 import os
 import math
 import uuid
@@ -10,7 +11,7 @@ import json
 import pandas as pd
 
 #django
-from randoplant.models import Plant, Region, Size
+from randoplant.models import Plant, Region, Size, Affinity
 from django.db.models import Sum
 
 pd.set_option('display.max_rows', None)
@@ -40,8 +41,12 @@ E60 should be a variable called "extremity" calculated like this
 repeat=0
 class PlantObject():
 	'''all files for resources should be kept here and follow this convention'''
+	pd.options.display.max_colwidth = 100
+	pd.set_option("display.max_rows", 100)
+
 	_base_dir = os.path.dirname(os.path.abspath(__file__))
 	_extremity_file_path = os.path.join(_base_dir, "json", "extremity.json")
+
 	# _sizes_file_path = os.path.join(_base_dir, "json", "size.json")
 
 	@classmethod
@@ -50,6 +55,9 @@ class PlantObject():
 			return json.load(f)
 
 	def __init__(self,plant=None, *args, **kwargs):
+		self.plant_instance_dataframe_dtypes = {'affinityName':np.str, 'affinityProbability':np.float, 'weightedMarginalAffinity':np.float, 'normalizedAffinity':np.float, 'computedAffinityPotence':np.float, 'affinityRank':np.int}
+		self.plant_instance_dataframe_columns = ['affinityName', 'affinityProbability', 'weightedMarginalAffinity', 'normalizedAffinity', 'computedAffinityPotence','affinityRank']
+	
 		self.plant = plant[0]
 		self.set_bool = self.plant.continent_origin is not None
 		self.region = Region.objects.get(name=self.plant.region.name) if self.set_bool else None
@@ -97,18 +105,48 @@ class PlantObject():
 		pass
 
 	def generate_affinity_probability(self,affinity_percentage):
-		return (random.random()*affinity_percentage)**self.region_power
+		i=random.random()
+		# print(f'	...computing affinity {i} x {affinity_percentage/100}^{self.region_power} = {(i*affinity_percentage)**self.region_power}')
+		# time.sleep(1)
+		return (i*(affinity_percentage/100)) ** self.region_power
 
 	def generate_instance_biases(self):
 		biases_dict = {}
-		totalAffinityProbability = self.plant.total_affinity_percentage
-		for field in self.plant.get_float_fields():
-			probability=self.generate_affinity_probability(getattr(self.plant, str(field.name)))
-			ptence=self.potence*probability
-			biases_dict.setdefault(str(field.name), {'probability': self.generate_affinity_probability(getattr(self.plant, str(field.name))), 'potence': ptence})
-		#	biases_dict.setdefault(str(field.name), {}).setdefault({'probability', self.generate_affinity_probability(getattr(self.plant,str(field.name))),'potence', ptence})
-
-	# 	computedAffinityPotence = self.potence*(expectedAffinityProbability/totalAffinityProbability)
+		plant_float_fields = self.plant.get_float_fields()
+		random.shuffle(plant_float_fields)
+		totalAffinityProbability = self.plant.total_affinity_percentage			
+		potencyTotalAffinityValue = totalAffinityProbability
+		cumWeightedAffinityProbability = 0
+		# print(f'totalAffinityPotence: {potencyTotalAffinityValue} potence:{self.potence}')
+		plant_df = pd.DataFrame(columns=self.plant_instance_dataframe_columns).astype(self.plant_instance_dataframe_dtypes)
+		plant_df['affinityName'] = [field.name for field in plant_float_fields]
+		plant_df['affinityProbability'] = [getattr(self.plant, str(field.name)) for field in plant_float_fields]
+		plant_df['weightedMarginalAffinity'] = [self.generate_affinity_probability(getattr(self.plant, str(field.name))) for field in plant_float_fields]
+		total_marginal_affinity = plant_df['weightedMarginalAffinity'].sum()
+		plant_df['normalizedAffinity'] = plant_df['weightedMarginalAffinity'] / total_marginal_affinity
+		plant_df['computedAffinityPotence'] = plant_df['normalizedAffinity']*self.potence
+		plant_df['finalAffinityPotence'] = round(plant_df['computedAffinityPotence']).astype(int)
+		plant_df['affinityRank'] = plant_df['computedAffinityPotence'].rank(method='min', ascending=False).astype(int)
+		#assign the raw data to the plant_df attr
+		self.plant_df = plant_df.sort_values(by='affinityRank', ascending=True)
+		print(f'{self.plant} - pt:{self.potence}')
+		print(self.plant_df)
+		for field in plant_float_fields:
+			#compute normalized weights for affinities
+			if gendtotalAffinityProbability < potencyTotalAffinityValue:
+				p = self.generate_affinity_probability(getattr(self.plant, str(field.name)))
+				print(f'generated {field.name}:{p} ..appending')
+				time.sleep(1)
+				p=probability*(self.potence)
+				biases_dict.setdefault(str(field.name), {'probability': p})
+			else:
+				biases_dict.setdefault(str(field.name), {'probability': 0})
+		# pprint.pprint(biases_dict)
+			biases_dict.setdefault(str(field.name), {}).setdefault({'probability', self.generate_affinity_probability(getattr(self.plant,str(field.name))),'potence', ptence})
+		#at this point the affinity numbers are set 
+		#now I just need to loop over and compute the "college"
+		print(f'gendtotalAffinityProbability = {gendtotalAffinityProbability}')
+		#computedAffinityPotence = self.potence*(expectedAffinityProbability/totalAffinityProbability)
 		return biases_dict
 
 class PlantUtilities:

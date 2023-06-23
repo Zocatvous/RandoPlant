@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.contrib.postgres.fields import ArrayField
 
 from random import random, uniform
@@ -147,6 +147,7 @@ class Plant(models.Model):
 			if flower.name not in flower_count:
 				flower_count[flower.name] = 0
 			flower_count[flower.name] += 1
+		import pprint
 		pprint.pprint(flower_count)
 		return flower_count
 
@@ -170,6 +171,14 @@ class Compound(models.Model):
 class Affinity(models.Model):
 	name=models.CharField(max_length=30,null=True)
 	adjective=models.CharField(max_length=30,null=True)
+
+class Effect(models.Model):
+	name=models.CharField(max_length=30,null=True)
+
+	def __str__(self):
+		return self.name
+
+
 
 # class Continent(models.GameObject):
 # 	game_object_id-models.ForiegnKey(GameObject, related_name='continent', on_delete=models.CASCADE)
