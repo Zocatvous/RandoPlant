@@ -79,6 +79,7 @@ class Plant(models.Model):
 	antidote=models.CharField(default=0.0,null=True,blank=True,max_length=200)
 	continent_origin = models.ForeignKey(Region, on_delete=models.CASCADE, related_name='plants')
 	description=models.TextField(default=None,max_length=300, null=True, blank=True)
+	#base_difficulty=models.IntegerField(default=1)
 
 	def __str__(self):
 		return f"<{self.name} - Commonality:{self.common_value}/{self.total_occurence_for_region(self.continent_origin)}>"
@@ -152,6 +153,26 @@ class Plant(models.Model):
 		pprint.pprint(flower_count)
 		return flower_count
 
+class CharacterSheet(models.Model):
+	template_name = models.TextField(max_length=25,null=False)
+	character_name = models.TextField(max_length=25)
+	template_revision_numer = models.IntegerField()
+	hitpoints = models.IntegerField(default=1)
+	alchemy_skill = models.IntegerField(default=1)
+	herblore_skill = models.IntegerField(default=1)
+	magic_skill = models.IntegerField(default=1)
+	physique = models.IntegerField(default=1)
+	strength = models.IntegerField(default=1)
+	satiety = models.IntegerField(default=1)
+
+
+
+
+	def __repr__(self):
+		return f"<CharacterSheet {self.name}>"
+
+
+
 class Size(models.Model):
 	name=models.TextField(max_length=50,null=False)
 	pretty_name=models.TextField(max_length=25,null=False)
@@ -167,6 +188,7 @@ class Events(models.Model):
 
 class Compound(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
+	ingredients=ArrayField(models.CharField(max_length=10, blank=True),size=8)
 	# ingredients=ArrayField(models.CharField(max_length=50), default=list)
 
 class Affinity(models.Model):
@@ -182,6 +204,14 @@ class Effect(models.Model):
 	def __str__(self):
 		return self.name
 
+class Tool(models.Model):
+	name=models.CharField(max_length=30,null=True)
+
+class GameState(models.Model):
+	name=models.CharField(max_length=100, null=False)
+	main_character_name = models.CharField(max_length=50)
+	first_save_timestamp = models.DateTimeField()
+	modified_timestamp = models.DateTimeField()
 
 
 # class Continent(models.GameObject):

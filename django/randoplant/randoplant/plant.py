@@ -13,32 +13,16 @@ import pandas as pd
 #django
 from randoplant.models import Plant, Region, Size, Affinity
 from django.db.models import Sum
+from django.db.models.query import QuerySet
+
 
 pd.set_option('display.max_rows', None)
-#All we want to do for the moment is make a class that looks up the "string" of the region bias and loads the biases as a datafram to a dataframe object in an attribute. 
 
-'''
-underscored properties and attributes are "meta" sort of things that help drive the object functionally
-non-underscored methods and attributes are for setting the plant
-eventually there will be differentiation between GET and SET functions that will either set attributes or retrieve values as an output
-but we are doing both at once for the time being
-
-
-Class kwargs are 
-- a currently mandatory region bias flag
-- a random flag for true random behavior
-- a wieghted mode for what will be used to generate all flowers according to region
-
-F59 should be a variable called "base"
-E60 should be a variable called "extremity" calculated like this
-Heres a function that needs to generate an integer that fits the specified criteria
-
-=randbetween(2+F59^(E60-1),F59^E60)
-
-F59 should be a variable called "base"
-E60 should be a variable called "extremity" calculated like this
-'''
 repeat=0
+
+
+#MAKE SURE YOU DO NOT PASS A QUERYSET to the plant kwarg
+
 class PlantObject():
 	'''all files for resources should be kept here and follow this convention'''
 	pd.options.display.max_colwidth = 100
@@ -55,10 +39,12 @@ class PlantObject():
 			return json.load(f)
 
 	def __init__(self,plant=None, *args, **kwargs):
+		if isinstance(plant, QuerySet):
+			raise ValueError("DINGUS: QuerySet type is not allowed for PlantObject(s). Pass in a django model like a real person...")
 		self.plant_instance_dataframe_dtypes = {'affinityName':np.str, 'affinityProbability':np.float, 'weightedMarginalAffinity':np.float, 'normalizedAffinity':np.float, 'computedAffinityPotence':np.float, 'affinityRank':np.int}
 		self.plant_instance_dataframe_columns = ['affinityName', 'affinityProbability', 'weightedMarginalAffinity', 'normalizedAffinity', 'computedAffinityPotence','affinityRank']
 		self.plant_df = None
-		self.plant = plant[0]
+		self.plant = plant
 		self.set_bool = self.plant.continent_origin is not None
 		self.region = Region.objects.get(name=self.plant.region.name) if self.set_bool else None
 		#self.region = Region.objects.get(name=self.plant.continent_origin) if self.set_bool else None
@@ -75,22 +61,25 @@ class PlantObject():
 		self.value = self.set_value() if (self.extremeness is not None) else None
 
 		self.affinities = self.generate_instance_biases() if (self.potence is not None) else None
-		self.name = f"<<({self.size.pretty_name} {self.get_dominant_affinity_adjective() if (self.affinities is None) else None} {self.plant.name}>>"
+		self.name = f"{self.size.pretty_name} {self.get_dominant_affinity_adjective()} {self.plant.name}"
 
 	def __str__(self):
 		return f"{self.size.pretty_name} {self.get_dominant_affinity_adjective()} {self.plant.name}"
 
 	def __repr__(self):
-		return f"< Name:({self.size.pretty_name} {Affinity.objects.get(name=self.get_dominant_affinity_adjective()) if (self.affinities is not None) else None} {self.plant.name}) - value:({self.value}) potency:({self.potence}))"
+		return f"<< Name:{self.name} - value:({self.value}) potency:({self.potence}) >>"
 
 	def get_dominant_affinity_adjective(self,verbose=False):
 		if self.plant_df is None:
 			return None
 		entry = str(self.plant_df[self.plant_df['finalAffinityPotence'] == self.plant_df['finalAffinityPotence'].max()]['affinityName'].iloc[0])
-		adjective = Affinity.objects.get(name=str(entry)).adjective
-		if verbose:
-			print(f'{Affinity.objects.get(name=str(entry)).adjective} {entry}')
-		return Affinity.objects.get(name=str(entry)).adjective
+		affinity_queryset = Affinity.objects.filter(name=entry)
+		if affinity_queryset.exists():
+			adjective = affinity_queryset.first().adjective
+			if verbose:
+				print(f'{Affinity.objects.get(name=str(entry)).adjective} {entry}')
+			return adjective
+		return None
 
 	def set_extremeness(self, modify=False):
 		for i in range(1, 14):
@@ -116,10 +105,9 @@ class PlantObject():
 		biases_dict = {}
 		plant_float_fields = self.plant.get_float_fields()
 		random.shuffle(plant_float_fields)
-		totalAffinityProbability = self.plant.total_affinity_percentage			
+		totalAffinityProbability = self.plant.total_affinity_percentage
 		potencyTotalAffinityValue = totalAffinityProbability
 		cumWeightedAffinityProbability = 0
-		# print(f'totalAffinityPotence: {potencyTotalAffinityValue} potence:{self.potence}')
 		plant_df = pd.DataFrame(columns=self.plant_instance_dataframe_columns).astype(self.plant_instance_dataframe_dtypes)
 		plant_df['affinityName'] = [field.name for field in plant_float_fields]
 		plant_df['affinityProbability'] = [getattr(self.plant, str(field.name)) for field in plant_float_fields]
@@ -191,12 +179,7 @@ class PlantUtilities:
 		#set plant name attr
 		#set plant attr
 		#set plant columns while on the attr
-		
-	#property
-	def get_plant_power_profile(self):
-		pass
-	def get_plant_price(self):
-		pass
+
 
 	#USE THIS TO REBUILD THE DATABASE OF PLANTS!!! (for now)
 	def create_plants(self):
