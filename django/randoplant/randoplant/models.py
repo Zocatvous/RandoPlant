@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Sum, Q
 from django.contrib.postgres.fields import ArrayField
+from django.views.generic import TemplateView
+
 
 from random import random, uniform
 
@@ -186,6 +188,11 @@ class Events(models.Model):
 	description=models.TextField(default=None,max_length=300, null=True, blank=True)
 	text=models.TextField(default=None,max_length=300, null=True, blank=True)
 
+class Player(models.Model):
+	name=models.TextField(max_length=15, null=False, blank=False)
+	strength=models.IntegerField(max_length=3, null=True, blank=False, default=0)
+	dexterity=models.IntegerField(max_length=3, null=True, blank=False, default=0)
+
 class Compound(models.Model):
 	name=models.TextField(max_length=50,null=False, blank=True)
 	ingredients=ArrayField(models.CharField(max_length=10, blank=True),size=8)
@@ -213,6 +220,11 @@ class GameState(models.Model):
 	first_save_timestamp = models.DateTimeField()
 	modified_timestamp = models.DateTimeField()
 
+class CurrentGamePlantObjects(models.Model):
+	name = models.CharField(max_length=100)
+	plant_objects = models.ManyToManyField(PlantObject)
+	def __str__(self):
+		return f'gameobject_{self.plant_objects}'
 
 # class Continent(models.GameObject):
 # 	game_object_id-models.ForiegnKey(GameObject, related_name='continent', on_delete=models.CASCADE)
@@ -222,4 +234,6 @@ class GameState(models.Model):
 # class Item(models.GameObject):
 # 	game_object_id=models.IntegerField()
 # 	name=models.CharField(max_length=50)
+
+
 

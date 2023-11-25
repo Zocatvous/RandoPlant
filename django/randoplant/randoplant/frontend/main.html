@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RandoPlantPrototype</title>
+</head>
+<body>
+    <div id="plant-object-data">
+        <!-- Data will be populated here -->
+    </div>
+
+    <script>
+        // JavaScript code to fetch and populate data
+        fetch('/api/plant-objects/1/')  // Replace with your API endpoint URL
+            .then(response => response.json())
+            .then(data => {
+                // Populate the HTML elements with the fetched data
+                const plantObjectData = document.getElementById('plant-object-data');
+                plantObjectData.innerHTML = `
+                    <h2>${data.name}</h2>
+                    <p>Size: ${data.size}</p>
+                    <p>Extremeness: ${data.extremeness}</p>
+                    <p>Potence: ${data.potence}</p>
+                    <p>Value: ${data.value}</p>
+                    <p>Affinities:</p>
+                    <ul>
+                        ${Object.entries(data.affinities).map(([affinity, potence]) => `
+                            <li>${affinity}: ${potence}</li>
+                        `).join('')}
+                    </ul>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    </script>
+</body>
+</html>
