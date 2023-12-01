@@ -4,7 +4,18 @@ partial credit goes to my good friend Dan Herron for the GURPS knowledge and pro
 ...it is far from complete, at the time of creation it will have the ability to load a series of datasheets with plant biases and a series of methods for mainting successful functioning and also loading "plant data" from the given datasheets or a random one.
 
 (still being developed)
-- a function to compute rarity that is also implemented in get_random_plant that allows random plants to be selected from a set of occurrence values or from a truly random set.
+
+Design Epic(s)
+Frontend
+- rework HTML to display data elements and make sure API is retrieving plant data effectively.
+
+
+Need to create the randoplant_game app
+  - configure models to store ephemeral gamestate objects and build in such a way that saving gamestates for a particular account is possible
+  - make sure that views are configured
+
+Scripting
+- plant database rebuild function (created datasource in /json)- 
 
 - a function for generating unique names for plants based on computed properties
 - a function for generating "quality modifiers" for the plant name.
