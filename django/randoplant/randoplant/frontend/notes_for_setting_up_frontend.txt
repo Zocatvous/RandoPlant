@@ -1,0 +1,13 @@
+1. URL mappers to forward the supported URLs (and any information encoded in the URLs) to the appropriate view functions.
+
+	the URLs that you need for your pages are:
+
+	catalog/ - The home index page.
+	calatog/books/ - a list of all books. (this can be.. a list of all characters or effects to be grabbed by the plants potentially?)
+	catalog/authors/ - a list of all authors. (this is a list of all plants in the game!) 
+	catalog/book/<id> - the detail view for a particular book, with a field primary key of <id> 
+	catalog/author/<id> - detail view for a particular author, same as above
+
+
+2. View functions to get the requested data from the models, create HTML pages that display the data, and return the pages to the user to view in the browser.
+3. Templates to use when rendering data in the views.

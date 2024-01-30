@@ -15,11 +15,9 @@ from randoplant.models import Plant, Region, Size, Affinity
 from django.db.models import Sum
 from django.db.models.query import QuerySet
 
-
 pd.set_option('display.max_rows', None)
 
 repeat=0
-
 
 #MAKE SURE YOU DO NOT PASS A QUERYSET to the plant kwarg
 

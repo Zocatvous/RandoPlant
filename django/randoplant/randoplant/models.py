@@ -3,6 +3,8 @@ from django.db.models import Sum, Q
 from django.contrib.postgres.fields import ArrayField
 from django.views.generic import TemplateView
 
+from .plant import PlantObject
+
 
 from random import random, uniform
 
@@ -157,7 +159,7 @@ class Plant(models.Model):
 
 class CharacterSheet(models.Model):
 	template_name = models.TextField(max_length=25,null=False)
-	character_name = models.TextField(max_length=25)
+	character_name = models.TextField(max_length=25,null=False)
 	template_revision_numer = models.IntegerField()
 	hitpoints = models.IntegerField(default=1)
 	alchemy_skill = models.IntegerField(default=1)
@@ -166,9 +168,6 @@ class CharacterSheet(models.Model):
 	physique = models.IntegerField(default=1)
 	strength = models.IntegerField(default=1)
 	satiety = models.IntegerField(default=1)
-
-
-
 
 	def __repr__(self):
 		return f"<CharacterSheet {self.name}>"
@@ -224,7 +223,11 @@ class CurrentGamePlantObjects(models.Model):
 	name = models.CharField(max_length=100)
 	plant_objects = models.ManyToManyField(PlantObject)
 	def __str__(self):
-		return f'gameobject_{self.plant_objects}'
+		return f'<{self.plant_objects}>'
+
+# THIS IS Neccesary
+#class PlantInstance(models.Model):
+
 
 # class Continent(models.GameObject):
 # 	game_object_id-models.ForiegnKey(GameObject, related_name='continent', on_delete=models.CASCADE)
